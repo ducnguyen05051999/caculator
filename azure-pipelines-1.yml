@@ -9,10 +9,11 @@ trigger:
 pool: docker
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- script: docker pull katalonstudio/katalon:8.3.0.beta
+  displayName: 'Pull katalon studio images'
+- script: docker run -t --rm -v "%cd%":/katalon/katalon/source katalonstudio/katalon katalonc-execute.sh -retry=0 -testSuitePath="Test Suites/web-service-tests - All Test Cases" -browserType="Web Service" -executionProfile="default" -licenseRelease=true -apiKey="4e2f841d-2558-4b6d-933c-14f0192acd8b" -orgID=301267 --config -webui.autoUpdateDrivers=true
+  displayName: 'Runnning Katalon TS_RegressionTest'
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'JUnit Report' 
+    targetPath: report/
